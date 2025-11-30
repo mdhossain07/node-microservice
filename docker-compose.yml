@@ -7,7 +7,7 @@ services:
     container_name: mongo_db
     restart: always
     ports:
-      - "27018:27017" # host:container
+      - "27018:27017"
     volumes:
       - mongo_data:/data/db
 
@@ -24,8 +24,38 @@ services:
     depends_on:
       - mongo
 
+  # ----------------------------
+  # POSTGRES
+  # ----------------------------
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: task_service_db
+
+  # ----------------------------
+  # TASK SERVICE
+  # ----------------------------
+  task-service:
+    build: ./task-service
+    container_name: task_service
+    ports:
+      - "5002:5002"
+    env_file:
+      - ./task-service/.env
+    depends_on:
+      - postgres
+
 # ----------------------------
 # VOLUMES
 # ----------------------------
 volumes:
   mongo_data:
+  postgres_data:
