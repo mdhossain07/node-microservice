@@ -3,6 +3,7 @@ dotenv.config();
 import express from "express";
 import { connectDB } from "./config/database.js";
 import taskRoutes from "./routes/task.route.js";
+import { connectQueue } from "./config/queue.js";
 
 try {
   const app = express();
@@ -11,7 +12,11 @@ try {
   // Middleware
   app.use(express.json());
 
+  // database connection
   connectDB();
+
+  // queue connection
+  connectQueue();
 
   app.get("/", (req, res) => {
     res.status(200).json({ messge: "Hello World" });

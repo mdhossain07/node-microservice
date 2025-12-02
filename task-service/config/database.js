@@ -19,13 +19,6 @@ export const AppDataSource = new DataSource({
 });
 
 export const connectDB = async () => {
-  console.log(
-    process.env.DB_HOST,
-    process.env.DB_PORT,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    process.env.DB_NAME
-  );
   try {
     await AppDataSource.initialize();
     console.log("Data Source has been initialized!");

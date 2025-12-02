@@ -1,9 +1,11 @@
+import QueueService from "../services/queue.service.js";
 import TaskService from "../services/task.service.js";
 import catchAsync from "../utils/catchAsync.js";
 
 class TaskController {
   createTask = catchAsync(async (req, res) => {
     const task = await TaskService.createTask(req.body);
+    QueueService.publishTaskWithRetry("task_queue", task);
     return res
       .status(201)
       .json({ success: true, message: "Task created successfully", task });

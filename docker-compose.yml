@@ -12,19 +12,20 @@ services:
       - mongo_data:/data/db
 
   # ----------------------------
-  # USER SERVICE
+  # RabbitMQ
   # ----------------------------
-  user-service:
-    build: ./user-service
-    container_name: user_service
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
     ports:
-      - "5001:5001"
-    env_file:
-      - ./user-service/.env
-    depends_on:
-      - mongo
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
 
-  # ----------------------------
+    # ----------------------------
   # POSTGRES
   # ----------------------------
   postgres:
@@ -41,6 +42,19 @@ services:
       POSTGRES_DB: task_service_db
 
   # ----------------------------
+  # USER SERVICE
+  # ----------------------------
+  user-service:
+    build: ./user-service
+    container_name: user_service
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./user-service/.env
+    depends_on:
+      - mongo
+
+  # ----------------------------
   # TASK SERVICE
   # ----------------------------
   task-service:
@@ -52,6 +66,20 @@ services:
       - ./task-service/.env
     depends_on:
       - postgres
+      - rabbitmq
+
+  # ----------------------------
+  # NOTIFICATION SERVICE
+  # ----------------------------
+  notification-service:
+    build: ./notification-service
+    container_name: notification_service
+    ports:
+      - "5003:5003"
+    env_file:
+      - ./notification-service/.env
+    depends_on:
+      - rabbitmq
 
 # ----------------------------
 # VOLUMES

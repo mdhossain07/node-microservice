@@ -4,12 +4,9 @@ import Task from "../entities/Task.js";
 class TaskService {
   createTask = async (taskData) => {
     try {
-      const task = await AppDataSource.createQueryBuilder()
-        .insert()
-        .into(Task)
-        .values(taskData)
-        .returning("id")
-        .execute();
+      const taskRepository = AppDataSource.getRepository(Task);
+      const newTask = taskRepository.create(taskData);
+      const task = await taskRepository.save(newTask);
       return task;
     } catch (error) {
       throw error;
@@ -18,10 +15,8 @@ class TaskService {
 
   getTasks = async () => {
     try {
-      const tasks = await AppDataSource.createQueryBuilder()
-        .select("Task")
-        .from(Task, "Task")
-        .getMany();
+      const taskRepository = AppDataSource.getRepository(Task);
+      const tasks = await taskRepository.find();
       return tasks;
     } catch (error) {
       throw error;
